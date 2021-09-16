@@ -1,4 +1,4 @@
-package com.example.mwwm_counter.counter
+package surf.elementary.country
 
 import io.flutter.embedding.android.FlutterActivity
 

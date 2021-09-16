@@ -1,7 +1,4 @@
-import 'dart:async';
-
-import 'package:elementary/src/model.dart';
-import 'package:elementary/src/widget.dart';
+import 'package:elementary/elementary.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -12,6 +9,35 @@ typedef WidgetModelFactory<T extends WidgetModel> = WidgetModel Function(
 
 /// Base interface for all Widget Model.
 abstract class IWM {}
+
+/// A widget that use WidgetModel for build.
+///
+/// You must provide [wmFactory] factory function to the constructor
+/// to instantiate WidgetModel. For testing, you can replace
+/// this function for returning mock.
+abstract class WMWidget<I extends IWM> extends Widget {
+  final WidgetModelFactory wmFactory;
+
+  const WMWidget(
+    this.wmFactory, {
+    Key? key,
+  }) : super(key: key);
+
+  /// Creates a [WMElement] to manage this widget's location in the tree.
+  ///
+  /// It is uncommon for subclasses to override this method.
+  @override
+  Element createElement() {
+    return WMElement(this);
+  }
+
+  /// Describes the part of the user interface represented by this widget.
+  ///
+  /// You can use all properties and methods provided by Widget Model.
+  /// You should not use [BuildContext] or something else, all you need
+  /// must contains in Widget Model.
+  Widget build(I wm);
+}
 
 /// Class that contains all presentation logic of the widget.
 abstract class WidgetModel<W extends WMWidget, M extends Model>
@@ -37,7 +63,6 @@ abstract class WidgetModel<W extends WMWidget, M extends Model>
 
   WMElement? _element;
   W? _widget;
-  StreamSubscription<Object>? _errorSubscription;
 
   WidgetModel(this._model);
 
@@ -45,8 +70,9 @@ abstract class WidgetModel<W extends WMWidget, M extends Model>
   @protected
   @mustCallSuper
   void initWidgetModel() {
-    _model.init();
-    _errorSubscription = _model.errorTranslator.listen(onErrorHandle);
+    _model
+      ..init()
+      .._wmHandler = onErrorHandle;
   }
 
   /// Called whenever the widget configuration changes.
@@ -77,7 +103,6 @@ abstract class WidgetModel<W extends WMWidget, M extends Model>
   @protected
   @mustCallSuper
   void dispose() {
-    _errorSubscription?.cancel();
     _model.dispose();
   }
 }
@@ -140,4 +165,38 @@ class WMElement extends ComponentElement {
 
     super.performRebuild();
   }
+}
+
+/// Class that contains a business logic for Widget.
+///
+/// You can write this freestyle. It may be collection of methods,
+/// streams or something else.
+///
+/// This class can take [ErrorHandler] for handling caught error
+/// like a logging or something else. This realize by using
+/// [handleError] method. This method also notifies the Widget Model about the
+/// error that has occurred. You can use onErrorHandle method of Widget Model
+/// to handle on UI like show snackbar or something else.
+abstract class Model {
+  final ErrorHandler? _errorHandler;
+  void Function(Object)? _wmHandler;
+
+  Model({ErrorHandler? errorHandler}) : _errorHandler = errorHandler;
+
+  /// Should be used for report error Error Handler if it was set and notify
+  /// Widget Model about error.
+  @protected
+  @mustCallSuper
+  void handleError(Object error) {
+    _errorHandler?.handleError(error);
+    _wmHandler?.call(error);
+  }
+
+  /// Method for initialize this Model.
+  ///
+  /// Will be call at first build when Widget Model created.
+  void init() {}
+
+  /// Called when Widget Model disposing.
+  void dispose() {}
 }
