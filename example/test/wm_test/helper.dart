@@ -2,25 +2,31 @@
 
 import 'package:elementary/src/core.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:meta/meta.dart';
 import 'package:mocktail/mocktail.dart';
 
-void main() {
-  test('adds one to input values', () {});
-}
-
+@isTest
 void testWidgetModel<WM extends WidgetModel, W extends WMWidget>(
   String description,
-  WM wm,
-  dynamic Function(WMTester<WM, W> tester) testFunction,
+  WM Function() setupWm,
+  dynamic Function(WM wm, WMTestableElement<WM, W> tester, WMContext context)
+      testFunction,
 ) {
+  setUp(() {
+    registerFallbackValue(WMContext());
+  });
+
   test(description, () async {
+    final wm = setupWm();
     final element = WMTestableElement<WM, W>(wm);
-    await testFunction(element);
+    await testFunction(wm, element, element);
   });
 }
 
-class WMTestableElement<WM extends WidgetModel, W extends WMWidget> extends Mock
+class WMTestableElement<WM extends WidgetModel, W extends WMWidget>
+    extends WMContext
     with Diagnosticable
     implements WMElement, WMTester<WM, W> {
   final WM _wm;
@@ -57,6 +63,8 @@ class WMTestableElement<WM extends WidgetModel, W extends WMWidget> extends Mock
       ..setupTestWidget(null);
   }
 }
+
+class WMContext extends Mock implements BuildContext {}
 
 abstract class WMTester<WM extends WidgetModel, W extends WMWidget> {
   void init({W? initWidget});

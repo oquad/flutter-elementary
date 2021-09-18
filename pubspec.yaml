@@ -18,4 +18,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
+  mocktail: 0.1.4
+
 flutter:
+  uses-material-design: true

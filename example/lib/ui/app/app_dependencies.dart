@@ -3,6 +3,7 @@ import 'package:country/data/repository/country/country_repository.dart';
 import 'package:country/ui/app/app.dart';
 import 'package:country/ui/screen/country_list_screen/country_list_screen_model.dart';
 import 'package:country/utils/error/default_error_handler.dart';
+import 'package:country/utils/wrapper/theme_wrapper.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -24,6 +25,8 @@ class _AppDependenciesState extends State<AppDependencies> {
   late final CountryRepository _countryRepository;
   late final CountryListScreenModel _countryListScreenModel;
 
+  late final ThemeWrapper _themeWrapper;
+
   @override
   void initState() {
     super.initState();
@@ -37,6 +40,8 @@ class _AppDependenciesState extends State<AppDependencies> {
       _countryRepository,
       _defaultErrorHandler,
     );
+
+    _themeWrapper = ThemeWrapper();
   }
 
   @override
@@ -45,6 +50,9 @@ class _AppDependenciesState extends State<AppDependencies> {
       providers: [
         Provider<CountryListScreenModel>(
           create: (_) => _countryListScreenModel,
+        ),
+        Provider<ThemeWrapper>(
+          create: (_) => _themeWrapper,
         ),
       ],
       child: widget.app,

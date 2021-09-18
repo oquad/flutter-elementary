@@ -2,6 +2,7 @@ import 'package:country/domain/country/country.dart';
 import 'package:country/res/theme/app_typography.dart';
 import 'package:country/ui/screen/country_list_screen/country_list_screen.dart';
 import 'package:country/ui/screen/country_list_screen/country_list_screen_model.dart';
+import 'package:country/utils/wrapper/theme_wrapper.dart';
 import 'package:dio/dio.dart';
 import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
@@ -12,13 +13,16 @@ CountryListScreenWidgetModel countryListScreenWidgetModelFactory(
   BuildContext context,
 ) {
   final model = context.read<CountryListScreenModel>();
-  return CountryListScreenWidgetModel(model);
+  final theme = context.read<ThemeWrapper>();
+  return CountryListScreenWidgetModel(model, theme);
 }
 
 /// Widget Model for [CountryListScreen]
 class CountryListScreenWidgetModel
     extends WidgetModel<CountryListScreen, CountryListScreenModel>
     implements ICountryListWidgetModel {
+  final ThemeWrapper _themeWrapper;
+
   final _countryListState = EntityStateNotifier<Iterable<Country>>();
   late TextStyle _countryNameStyle;
 
@@ -29,14 +33,18 @@ class CountryListScreenWidgetModel
   @override
   TextStyle get countryNameStyle => _countryNameStyle;
 
-  CountryListScreenWidgetModel(CountryListScreenModel model) : super(model);
+  CountryListScreenWidgetModel(
+    CountryListScreenModel model,
+    this._themeWrapper,
+  ) : super(model);
 
   @override
   void initWidgetModel() {
     super.initWidgetModel();
 
     _loadCountryList();
-    _countryNameStyle = AppTypography.title3;
+    _countryNameStyle =
+        _themeWrapper.getTextTheme(context).headline4 ?? AppTypography.title3;
   }
 
   @override

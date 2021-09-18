@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 /// Factory function for creating Widget Model.
-typedef WidgetModelFactory<T extends WidgetModel> = WidgetModel Function(
+typedef WidgetModelFactory<T extends WidgetModel> = T Function(
   BuildContext context,
 );
 
@@ -49,6 +49,7 @@ abstract class WidgetModel<W extends WMWidget, M extends Model>
   M get model => _model;
 
   @protected
+  @visibleForTesting
   W get widget => _widget!;
 
   BuildContext get context {
@@ -69,6 +70,7 @@ abstract class WidgetModel<W extends WMWidget, M extends Model>
   /// Called at first build for initialization of this Widget Model.
   @protected
   @mustCallSuper
+  @visibleForTesting
   void initWidgetModel() {
     _model
       ..init()
@@ -77,6 +79,7 @@ abstract class WidgetModel<W extends WMWidget, M extends Model>
 
   /// Called whenever the widget configuration changes.
   @protected
+  @visibleForTesting
   void didUpdateWidget(W oldWidget) {}
 
   /// Called when a dependency of this Widget Model changes.
@@ -89,6 +92,7 @@ abstract class WidgetModel<W extends WMWidget, M extends Model>
   /// It is safe to call [BuildContext.dependOnInheritedWidgetOfExactType]
   /// from this method.
   @protected
+  @visibleForTesting
   void didChangeDependencies() {}
 
   /// Called whenever the Model use method handleError.
@@ -102,8 +106,21 @@ abstract class WidgetModel<W extends WMWidget, M extends Model>
   /// permanently.
   @protected
   @mustCallSuper
+  @visibleForTesting
   void dispose() {
     _model.dispose();
+  }
+
+  @visibleForTesting
+  // ignore: use_setters_to_change_properties
+  void setupTestWidget(W? testWidget) {
+    _widget = testWidget;
+  }
+
+  @visibleForTesting
+  // ignore: use_setters_to_change_properties
+  void setupTestElement(WMElement? testElement) {
+    _element = testElement;
   }
 }
 
