@@ -499,7 +499,7 @@ final class Elementary extends ComponentElement {
   void performRebuild() {
     // private _firstBuild hack
     if (!_isInitialized) {
-      _wm = widget.wmFactory(this);
+      _wm = widget.wmFactory(this) as WidgetModel;
       _wm
         .._element = this
         .._widget = widget
