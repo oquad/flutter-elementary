@@ -7,17 +7,15 @@ import 'package:flutter/foundation.dart';
 /// errors.
 abstract interface class ErrorHandler {
   /// This method have to handle of passed error and optional [StackTrace].
-  void handleError(Object error, {StackTrace? stackTrace});
+  void handleError(Object error, StackTrace stackTrace);
 }
 
 /// The simplest error handler that just prints error to the console in
 /// debug mode.
 class DefaultDebugErrorHandler implements ErrorHandler {
   @override
-  void handleError(Object error, {StackTrace? stackTrace}) {
+  void handleError(Object error, StackTrace stackTrace) {
     debugPrint(error.toString());
-    if (stackTrace != null) {
-      debugPrintStack(stackTrace: stackTrace);
-    }
+    debugPrintStack(stackTrace: stackTrace);
   }
 }

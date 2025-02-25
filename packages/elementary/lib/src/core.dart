@@ -64,9 +64,9 @@ import 'package:flutter/material.dart';
 /// }
 /// ```
 /// {@end-tool}
-typedef WidgetModelFactory<T extends WidgetModel> = T Function(
-  BuildContext context,
-);
+typedef WidgetModelFactory<T extends IWidgetModel> = T Function(
+    BuildContext context,
+    );
 
 /// A basic interface for every [WidgetModel].
 ///
@@ -169,15 +169,15 @@ abstract interface class IWidgetModel {}
 /// widgets those inflate to [ComponentElement].
 ///
 /// See also: [StatelessWidget], [StatefulWidget], [InheritedWidget].
-abstract class ElementaryWidget<I extends IWidgetModel> extends Widget {
+abstract class ElementaryWidget<WM extends IWidgetModel> extends Widget {
   /// The factory function used to create a [WidgetModel].
   final WidgetModelFactory wmFactory;
 
   /// Creates an instance of ElementaryWidget.
-  const ElementaryWidget(
-    this.wmFactory, {
-    Key? key,
-  }) : super(key: key);
+  const ElementaryWidget({
+    required this.wmFactory,
+    super.key,
+  });
 
   /// Creates a [Elementary] to manage this widget's location in the tree.
   ///
@@ -197,7 +197,7 @@ abstract class ElementaryWidget<I extends IWidgetModel> extends Widget {
   /// to improve implementation of the [WidgetModel].
   /// But [BuildContext] CAN be used in all builder functions and all widgets
   /// used here.
-  Widget build(I wm);
+  Widget build(WM wm);
 }
 
 /// The basic implementation of the entity responsible for all
