@@ -320,7 +320,7 @@ abstract class WidgetModel<W extends ElementaryWidget,
   W? _widget;
 
   /// Creates an instance of the [WidgetModel].
-  WidgetModel(this._model);
+  WidgetModel({required M model}) : _model = model;
 
   /// Called while the first build for initialization of this [WidgetModel].
   ///
